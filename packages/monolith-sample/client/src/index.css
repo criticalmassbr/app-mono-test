@@ -1,0 +1,138 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.App {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profile-page, .timeline-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.profile {
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 250px;
+}
+
+.profile-pic img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.profile-details {
+  text-align: center;
+}
+
+.profile-details h2 {
+  margin: 10px 0;
+  font-size: 24px;
+}
+
+.profile-details p {
+  color: #666;
+  margin: 10px 0;
+}
+
+.profile-details ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile-details ul li {
+  margin: 10px 0;
+  color: #007BFF;
+  cursor: pointer;
+}
+
+.timeline {
+  width: 100%;
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.timeline h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
+}
+
+.post-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.post-form textarea {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.post-form button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.post-form button:hover {
+  background-color: #0056b3;
+}
+
+.post {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+
+.post p {
+  margin: 0;
+}
+
+.likes {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #007BFF;
+  cursor: pointer;
+}
+
+.likes span {
+  margin-right: 5px;
+}
+
+.profile-link, .back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: #007BFF;
+  text-decoration: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.profile-link:hover, .back-link:hover {
+  text-decoration: underline;
+}

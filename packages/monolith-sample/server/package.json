@@ -1,0 +1,26 @@
+{
+  "name": "monolith-sample-server",
+  "version": "1.0.0",
+  "description": "Backend server for monolith sample application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "author": "Leandro Andrade Candido",
+  "license": "MIT"
+}

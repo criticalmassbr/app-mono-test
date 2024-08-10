@@ -1,0 +1,23 @@
+{
+  "name": "monolith-sample",
+  "version": "1.0.0",
+  "description": "A sample monolith application for user profiles and timeline.",
+  "main": "index.js",
+  "scripts": {
+    "client": "npm start --prefix client",
+    "server": "npm start --prefix server",
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
+    "install:client": "cd client && npm install --verbose",
+    "install:server": "cd server && npm install --verbose",
+    "install:all": "npm install && npm run install:client && npm run install:server",
+    "build": "npm run build --prefix client"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "author": "Leandro Andrade Candido",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
