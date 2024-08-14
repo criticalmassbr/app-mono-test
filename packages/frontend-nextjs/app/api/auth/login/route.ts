@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import JsonWebToken from '@/utils/jwt';
 import UserLogin from '@/api_types/login';
+import { cookies } from 'next/headers';
 
 const prisma = new PrismaClient();
 
@@ -23,7 +24,13 @@ export async function POST(request: NextRequest): Promise<any> {
         }
 
         const token = JsonWebToken.signToken({ userId: user.id });
-
+        const cookieStore = cookies();
+        cookieStore.set('auth_token', token, {
+            httpOnly: true, // Makes the cookie inaccessible to JavaScript
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+            maxAge: 60 * 60, // 1 hour in seconds
+            path: '/', // The cookie is valid for the entire site
+        });
         const response = NextResponse.json({ message: 'Login successful' });
 
         // Set the JWT as a cookie in the response

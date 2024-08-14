@@ -6,11 +6,9 @@ export function middleware(req: NextRequest) {
   const authToken = req.cookies.get('auth_token')?.value;
 
   if (authToken) {
-    // Clone the request and add the auth_token to the headers
     const headers = new Headers(req.headers);
     headers.set('Authorization', `Bearer ${authToken}`);
 
-    // Recreate the request with the updated headers
     const modifiedRequest = new Request(req.url, {
       headers,
       method: req.method,
@@ -23,7 +21,7 @@ export function middleware(req: NextRequest) {
     });
   }
 
-  return NextResponse.redirect("/login");
+  return NextResponse.redirect(process.env.NEXT_PUBLIC_LOGIN ?? "");
 }
 
 // Define the paths where the middleware should run

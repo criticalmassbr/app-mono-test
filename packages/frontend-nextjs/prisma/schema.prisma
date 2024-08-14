@@ -25,6 +25,7 @@ model User {
 model Profile {
   id        Int      @id @default(autoincrement())
   userId    Int      @unique
+  name      String   @default("")
   bio       String?
   birthDate DateTime?
   user      User     @relation(fields: [userId], references: [id])

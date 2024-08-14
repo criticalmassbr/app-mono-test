@@ -2,13 +2,13 @@
 
 import { FormEvent, FC, useState } from 'react';
 import { Typography } from '@mui/material';
-import { RegisterButton, RegisterCard, RegisterChangeMode, RegisterContainer, RegisterError, RegisterField } from '@/src/components/auth/register/style';
+import { LoginButton, LoginCard, LoginChangeMode, LoginContainer, LoginError, LoginField } from '@/src/components/auth/login/style';
 import { useRouter } from 'next/navigation';
 
-const RegisterPageComponent: FC = () => {
+const LoginPageComponent: FC = () => {
     const { replace } = useRouter();
     const [error, setError] = useState<string | null>(null);
-
+    
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -19,7 +19,7 @@ const RegisterPageComponent: FC = () => {
                     const email = formData.get("email");
                     const password = formData.get("password");
                     const body = { email, password };
-                    const response = await fetch('/api/auth/register', {
+                    const response = await fetch('/api/auth/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -30,6 +30,7 @@ const RegisterPageComponent: FC = () => {
                         if (response.status == 404) throw new Error("E-mail or password not match");
                         throw new Error("Server Error");
                     }
+                    replace("/posts");
                     setError(null);
                 }
                 throw new Error("No form data");
@@ -41,23 +42,23 @@ const RegisterPageComponent: FC = () => {
     };
 
     return (
-        <RegisterContainer maxWidth="xs">
-            <RegisterCard className='shadow-lg'>
+        <LoginContainer maxWidth="xs">
+            <LoginCard className='shadow-lg'>
                 <Typography variant="h4" component="h1" gutterBottom>
-                    Register
+                    Login
                 </Typography>
                 <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-                    <RegisterField required size='small' name="email" label="Email" type="email" fullWidth />
-                    <RegisterField required size='small' name="password" label="Password" type="password" fullWidth />
-                    <RegisterButton variant='contained' color='info' type="submit" fullWidth sx={{ mt: 2 }}>
-                        Register
-                    </RegisterButton>
-                    <RegisterChangeMode onClick={() => replace("/auth/login")}>{"Already have an account? Login here"}</RegisterChangeMode>
-                    {error && <RegisterError>{error}</RegisterError>}
+                    <LoginField required size='small' name="email" label="Email" type="email" fullWidth />
+                    <LoginField required size='small' name="password" label="Password" type="password" fullWidth />
+                    <LoginButton variant='contained' color='info' type="submit" fullWidth sx={{ mt: 2 }}>
+                        Login
+                    </LoginButton>
+                    <LoginChangeMode onClick={() => replace("/register")}>{"Do not have an account? Register here"}</LoginChangeMode>
+                    {error && <LoginError>{error}</LoginError>}
                 </form>
-            </RegisterCard>
-        </RegisterContainer>
+            </LoginCard>
+        </LoginContainer>
     );
 };
 
-export default RegisterPageComponent;
+export default LoginPageComponent;

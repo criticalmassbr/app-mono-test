@@ -10,7 +10,7 @@ const FeedPageComponent: FC = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}/api/posts`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? '??'}/api/posts`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ const FeedPageComponent: FC = () => {
     return (
         <Container>
             {posts.map((post) => (
-                <Card key={post.id} sx={{ margin: '20px 0' }}>
+                <Card key={post.id}>
                     <CardContent>
                         <Typography variant="h5">{post.profile.bio}</Typography>
                         <Typography>{post.content}</Typography>

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Metadata, NextPage } from "next";
 import FeedPageComponent from "./component";
 

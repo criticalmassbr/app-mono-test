@@ -18,6 +18,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const user: UserRegister = await prisma.user.create({
             data: { email, password: hashedPassword },
         });
+        if (!user) {
+            throw new Error("User couldn't be created: Prisma problem")
+        }
 
         return NextResponse.redirect("/login");
     } catch (error) {
