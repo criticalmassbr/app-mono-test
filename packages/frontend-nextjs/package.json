@@ -1,34 +1,38 @@
 {
-  "name": "frontend-nextjs",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "clear": "yarn workspace frontend-nextjs cache clear && rm -rf ./.next && rm -rf ./node_modules && yarn workspace frontend-nextjs install",
-    "migrate:dev": "yarn workspace frontend-nextjs dlx prisma migrate dev --schema=./prisma/schema.prisma"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.18.0",
-    "next": "14.2.5",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5",
-    "postcss": "^8",
-    "prisma": "^5.18.0",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=20.10.0"
-  },
-  "packageManager": "yarn@4.4.0"
+    "name": "frontend-nextjs",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "clear": "yarn workspace frontend-nextjs cache clear && rm -rf ./.next && rm -rf ./node_modules && yarn workspace frontend-nextjs install",
+        "migrate:dev": "yarn workspace frontend-nextjs dlx prisma migrate dev --schema=./prisma/schema.prisma"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.18.0",
+        "bcrypt": "^5.1.1",
+        "jsonwebtoken": "^9.0.2",
+        "next": "14.2.5",
+        "react": "^18",
+        "react-dom": "^18"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^5",
+        "@types/jsonwebtoken": "^9",
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "eslint": "^8",
+        "eslint-config-next": "14.2.5",
+        "postcss": "^8",
+        "prisma": "^5.18.0",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5"
+    },
+    "engines": {
+        "node": ">=20.10.0"
+    },
+    "packageManager": "yarn@4.4.0"
 }
