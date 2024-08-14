@@ -1,10 +1,19 @@
 type GetPost = ProfileInfo & PostInfoInGetPosts
 
-
 type ProfileInfo = {
     profile: ProfileInGetPosts;
     reactions: ReactionInGetPost[];
 }
+
+export type Post = {
+    id: number;
+    content: string;
+    profile: {
+        id: number;
+        bio: string;
+    };
+};
+
 type ProfileInGetPosts = {
     id: number;
     userId: number;

@@ -19,11 +19,12 @@ class JsonWebToken {
         return jwt.sign(payload, this.secretKey, { expiresIn });
     }
 
-    public verifyToken(token: string): any {
+    public verifyToken(token: string) {
         try {
-            return jwt.verify(token, this.secretKey);
+            jwt.verify(token, this.secretKey);
+            return true;
         } catch (error) {
-            throw new Error('Invalid or expired token');
+            throw new Error(error instanceof Error ? error.message : "Invalid token")
         }
     }
 }
