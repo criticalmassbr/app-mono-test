@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import OwnPrismaClient from "@/utils/OwnPrismaClient";
 import bcrypt from 'bcrypt';
 import UserRegister from '@/api_types/register';
-
-const prisma = new PrismaClient();
-
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     let response = NextResponse.json(undefined, { status: 200 });
@@ -15,7 +12,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             response = NextResponse.json(undefined, { status: 400, statusText: 'Missing email, name or password' });
         } else {
             const hashedPassword = await bcrypt.hash(password, 10);
-            const user: UserRegister = await prisma.user.create({
+            const user: UserRegister = await OwnPrismaClient.user.create({
                 data: {
                     email,
                     password: hashedPassword,

@@ -1,36 +1,26 @@
-type GetPost = ProfileInfo & PostInfoInGetPosts
-
-type ProfileInfo = {
-    profile: ProfileInGetPosts;
-    reactions: ReactionInGetPost[];
-}
-
-export type Post = {
-    id: number;
-    content: string;
+type GetPost = {
+    id: number
+    content: string
+    profileId: number
+    liked?: boolean
+} & {
     profile: {
-        id: number;
-        bio: string;
+        name: string;
+        userId: number;
+        bio: string | null;
+        birthDate: Date | null;
+        user: {
+            email: string;
+        };
     };
-};
-
-type ProfileInGetPosts = {
-    id: number;
-    userId: number;
-    bio: string | null;
-    birthDate: Date | null;
+    reactions: {
+        profile: {
+            name: string;
+            userId: number;
+            bio: string | null;
+        };
+    }[];
 }
 
-type ReactionInGetPost = {
-    id: number;
-    postId: number;
-    profileId: number;
-}
-
-type PostInfoInGetPosts = {
-    id: number;
-    content: string;
-    profileId: number;
-}
 
 export default GetPost;

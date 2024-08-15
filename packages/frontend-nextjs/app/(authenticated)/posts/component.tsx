@@ -1,42 +1,55 @@
 "use client";
 
 import GetPost from '@/src/@types/api/posts';
-import { Container, Card, CardContent, Typography } from '@mui/material';
+import Post from '@/src/components/post';
+import { Container } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 
 const FeedPageComponent: FC = () => {
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const [posts, setPosts] = useState<GetPost[]>([]);
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? '??'}/api/posts`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const { status, ok, statusText } = response;
+                setLoading(true);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? ''}/posts?page=${1}`);
+                const { ok, statusText } = response;
                 if (!ok) throw new Error(statusText);
                 const body = await response.json();
-                setPosts(body);
+                setHasMore(body.length > 0);
+                setLoading(false);
+                setPosts((prev) => [...prev, ...body]);
             } catch (error) {
                 console.log(error)
+            } finally {
+                setLoading(false);
             }
         }
         fetchPosts();
-    }, []);
+    }, [page]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight && hasMore && !loading) {
+                setPage((prev) => prev + 1);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [hasMore, loading]);
 
     return (
-        <Container>
-            {posts.map((post) => (
-                <Card key={post.id}>
-                    <CardContent>
-                        <Typography variant="h5">{post.profile.bio}</Typography>
-                        <Typography>{post.content}</Typography>
-                    </CardContent>
-                </Card>
-            ))}
+        <Container maxWidth="md">
+
+            {posts.map((post, index) =>
+                <Post post={post} key={`post_card_${post.id}_${index}`} />)}
+
+            {loading && <p>Carregando mais...</p>}
+            {!hasMore && <p>Não há mais registros.</p>}
         </Container>
     );
 };

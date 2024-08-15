@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import UserLogin from '@/api_types/login';
+import OwnPrismaClient from "@/utils/OwnPrismaClient";
 
-const prisma = new PrismaClient();
 const secretKey = process.env.JWT_SECRET_KEY || 'dialog';
 export type LoginResponse = NextResponse<{
     error: string;
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
         const { email, password } = await request.json();
 
-        const user: UserLogin | null = await prisma.user.findUnique({ where: { email }, select: { id: true, email: true, password: true } });
+        const user: UserLogin | null = await OwnPrismaClient.user.findUnique({ where: { email }, select: { id: true, email: true, password: true } });
         if (user == null || !(await bcrypt.compare(password, user.password))) {
             response = NextResponse.json([], { status: 404, statusText: "Wrong e-mail or password" });
         } else {

@@ -1,14 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import OwnPrismaClient from "@/utils/OwnPrismaClient";
 import { faker } from '@faker-js/faker';
-
-const prisma = new PrismaClient();
 
 async function main() {
     // Your seeding logic here
     const commonPassword = 'password123';
 
     for (let i = 0; i < 5; i++) {
-        const user = await prisma.user.create({
+        const user = await OwnPrismaClient.user.create({
             data: {
                 email: faker.internet.email(),
                 password: commonPassword,
@@ -33,7 +31,7 @@ async function main() {
             });
         }
 
-        await prisma.post.createMany({
+        await OwnPrismaClient.post.createMany({
             data: posts
         });
 
@@ -49,5 +47,5 @@ main()
         console.error(e);
     })
     .finally(async () => {
-        await prisma.$disconnect();
+        await OwnPrismaClient.$disconnect();
     });
