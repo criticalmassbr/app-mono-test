@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OwnPrismaClient from "@/utils/OwnPrismaClient";
 import GetPost from '@/src/@types/api/posts';
+import { authenticatedUser } from '@/src/lib/user';
 
 type Validator = { profileId: number, postId: number };
 
@@ -24,8 +25,72 @@ const isUnliked = async (config: Validator) => {
     return existReact == null;
 }
 
+const update = async ({ profileId, postId }: Validator, action: "like" | "unlike") => {
+    const res = (action == "like") ? await OwnPrismaClient.reaction.create({
+        data: {
+            profileId,
+            postId
+        }, select: { id: true }
+    }) :
+        await OwnPrismaClient.reaction.delete({
+            where: {
+                postId_profileId: {
+                    profileId: Number(profileId),
+                    postId: Number(postId)
+                }
+            }, select: { id: true }
+        });
+
+    return !!res.id;
+}
+
+const getPostInfo = async (postId: string | number) => {
+    const user = await authenticatedUser();
+    if (!user) {
+        return false;
+    }
+    const post: GetPost | null = await OwnPrismaClient.post.findUnique({
+        where: {
+            id: Number(postId)
+        },
+        select: {
+            id: true,
+            content: true,
+            profileId: true,
+            profile: {
+                select: {
+                    name: true,
+                    bio: true,
+                    birthDate: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            email: true
+                        }
+                    }
+                }
+            }, reactions: {
+                select: {
+                    profile: {
+                        select: {
+                            name: true,
+                            bio: true,
+                            userId: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+    if (!!post) {
+        post.liked = post.reactions.map(e => e.profile.userId)?.includes(user.id);
+        return post;
+    }
+    return post;
+}
+
 export async function POST(req: NextRequest) {
-    let response = NextResponse.json({}, { status: 200 });
+    let response: NextResponse<any> = NextResponse.json({}, { status: 400, statusText: "Reaction exist" });
     try {
         const body = await req.json();
         if (!body) {
@@ -34,70 +99,28 @@ export async function POST(req: NextRequest) {
         const { profileId, postId, action } = body;
         if (!profileId || !postId || !action) {
             response = NextResponse.json({}, { status: 400, statusText: "Body bad formed" });
-        }
-        if (['like', 'unlike'].includes(action) == false) {
-            response = NextResponse.json({}, { status: 400, statusText: "Reaction exist" });
         } else {
-            if (action == "like") {
-                const likeVerify = await isLiked({ profileId: Number(profileId), postId: Number(postId) });
-                if (likeVerify) {
-                    response = NextResponse.json({}, { status: 400, statusText: "Reaction exist" });
-                }
-            }
-            if (action == "unlike") {
-                const unlikeVerify = await isUnliked({ profileId: Number(profileId), postId: Number(postId) });
-                if (unlikeVerify) {
-                    response = NextResponse.json({}, { status: 400, statusText: "Reaction exist" });
-                }
-            }
-            const tryingToSave = await OwnPrismaClient.reaction.create({
-                data: {
-                    profileId,
-                    postId
-                },
-                select: {
-                    id: true,
-                    post: {
-                        select: {
-                            id: true,
-                            content: true,
-                            profileId: true,
-                            profile: {
-                                select: {
-                                    name: true,
-                                    userId: true,
-                                    bio: true,
-                                    birthDate: true,
-                                    user: {
-                                        select: {
-                                            email: true
-                                        }
-                                    }
-                                }
-                            },
-                            reactions: {
-                                select: {
-                                    profile: {
-                                        select: {
-                                            name: true,
-                                            userId: true,
-                                            bio: true,
-                                        }
-                                    }
-                                }
-                            }
+            if (['like', 'unlike'].includes(action)) {
+                if (String(action).toLowerCase() == "like".toLowerCase()) {
+                    const likeVerify = await isLiked({ profileId: Number(profileId), postId: Number(postId) });
+                    if (!likeVerify) {
+                        const tup = await update({ profileId, postId }, "unlike");
+                        if (tup) {
+                            const newInfo = await getPostInfo(postId);
+                            if (newInfo !== false) response = NextResponse.json(newInfo, { status: 200 })
                         }
-                    },
-                    profile: {}
+                    }
                 }
-            });
-            if (!tryingToSave?.id) {
-                response = NextResponse.json({}, { status: 400, statusText: "Prisma didn't update db" });
-            } else {
-                const { post } = tryingToSave;
-                const getPostResponse: GetPost = post;
-                getPostResponse.liked = action == "like" ? true : false;
-                response = NextResponse.json(getPostResponse, { status: 200, statusText: "Updated"})
+                if (String(action).toLowerCase() == "unlike".toLowerCase()) {
+                    const unlikeVerify = await isUnliked({ profileId: Number(profileId), postId: Number(postId) });
+                    if (!unlikeVerify) {
+                        const tup = await update({ profileId, postId }, "unlike");
+                        if (tup) {
+                            const newInfo = await getPostInfo(postId);
+                            if (newInfo !== false) response = NextResponse.json(newInfo, { status: 200 })
+                        }
+                    }
+                }
             }
         }
     } catch (error) {

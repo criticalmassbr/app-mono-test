@@ -7,7 +7,10 @@ import { AuthUser } from "@/src/lib/user";
 import { NextResponse } from "next/server";
 import { useMessage } from "@/src/contexts/message";
 
-const Post: FC<{ post: GetPost, user: AuthUser, index: number, posts: GetPost[] }> = ({ post, user, posts, index }) => {
+type Props = { post: GetPost, fetchPosts: () => Promise<void>, user: AuthUser, index: number, posts: GetPost[], setPosts(v: GetPost[]): void }
+
+const Post: FC<Props> = ({ post, user, posts, index, fetchPosts }) => {
+    const [liked, setLiked] = useState<boolean>(post.liked ?? false);
     const { showMessage } = useMessage();
     const { reactions } = post;
     const { profile } = user;
@@ -22,11 +25,15 @@ const Post: FC<{ post: GetPost, user: AuthUser, index: number, posts: GetPost[] 
                     postId: post.id ?? null,
                     action: post.liked == true ? "unlike" : "like"
                 })
-            }) as NextResponse;
+            }) as NextResponse<{} | GetPost>;
         if (response.ok) {
-            const newPost = await response.json();
-            newPost.liked = post.liked == true ? false : true;
-            posts[index] = newPost;
+            const postInfo = await response.json() as {} | GetPost;
+            console.log({ postInfo })
+            if (Object.keys(postInfo).length === 0 && postInfo.constructor === Object) {
+                setLiked(Boolean((postInfo as GetPost).liked));
+            }
+            
+            // await fetchPosts();
         }
         else showMessage(response.statusText, "warning")
     }
@@ -35,17 +42,17 @@ const Post: FC<{ post: GetPost, user: AuthUser, index: number, posts: GetPost[] 
         <PostCard className='shadow' >
             <PostContent>
                 <PostProfileBox className='shadow' size='small'>
-                    <PostProfileImg alt={post.profile.name} />
-                    <PostProfile variant="body1">{post.profile.name}</PostProfile>
+                    <PostProfileImg alt={post?.profile?.name} />
+                    <PostProfile variant="body1">{post?.profile?.name}</PostProfile>
                 </PostProfileBox>
-                <PostText>{post.content}</PostText>
+                <PostText>{post?.content}</PostText>
                 <PostReactionBox>
                     <Box>
                         <IconButton onClick={handleLike}>
-                            {post.liked == true && <Favorite fontSize='small' />}
-                            {!post.liked && <FavoriteBorder fontSize='small' />}
+                            {liked == true && <Favorite fontSize='small' />}
+                            {!liked && <FavoriteBorder fontSize='small' />}
                         </IconButton>
-                        <span>{reactions.length}</span>
+                        <span>{reactions?.length}</span>
                     </Box>
                 </PostReactionBox>
             </PostContent>
