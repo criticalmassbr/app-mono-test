@@ -7,7 +7,7 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "prisma:seed": "tsc ./prisma/seed/names.ts && node ./prisma/seed/names.js",
+        "prisma:seed": "tsc ./prisma/seed/profiles.ts && node ./prisma/seed/profiles.js",
         "clear": "yarn workspace frontend-nextjs cache clear && rm -rf ./.next && rm -rf ./node_modules && yarn workspace frontend-nextjs install",
         "migrate:dev": "yarn workspace frontend-nextjs dlx prisma migrate dev --schema=./prisma/schema.prisma"
     },

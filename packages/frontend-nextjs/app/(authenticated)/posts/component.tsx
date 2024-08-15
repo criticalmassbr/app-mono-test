@@ -2,10 +2,11 @@
 
 import GetPost from '@/src/@types/api/posts';
 import Post from '@/src/components/post';
+import { AuthUser } from '@/src/lib/user';
 import { Container } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 
-const FeedPageComponent: FC = () => {
+const FeedPageComponent: FC<{ user: AuthUser }> = ({ user }) => {
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -15,7 +16,7 @@ const FeedPageComponent: FC = () => {
         const fetchPosts = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? ''}/posts?page=${1}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? ''}/posts?page=${page <= 0 ? 1 : page}`);
                 const { ok, statusText } = response;
                 if (!ok) throw new Error(statusText);
                 const body = await response.json();
@@ -29,7 +30,7 @@ const FeedPageComponent: FC = () => {
             }
         }
         fetchPosts();
-    }, [page]);
+    }, [page, user]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -46,7 +47,9 @@ const FeedPageComponent: FC = () => {
         <Container maxWidth="md">
 
             {posts.map((post, index) =>
-                <Post post={post} key={`post_card_${post.id}_${index}`} />)}
+                <Post {...{
+                    post, index, posts, user
+                }} key={`post_card_${post.id}_${index}`} />)}
 
             {loading && <p>Carregando mais...</p>}
             {!hasMore && <p>Não há mais registros.</p>}

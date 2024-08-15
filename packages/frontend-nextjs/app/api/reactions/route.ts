@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OwnPrismaClient from "@/utils/OwnPrismaClient";
+import GetPost from '@/src/@types/api/posts';
 
 type Validator = { profileId: number, postId: number };
 
@@ -53,15 +54,55 @@ export async function POST(req: NextRequest) {
                 data: {
                     profileId,
                     postId
+                },
+                select: {
+                    id: true,
+                    post: {
+                        select: {
+                            id: true,
+                            content: true,
+                            profileId: true,
+                            profile: {
+                                select: {
+                                    name: true,
+                                    userId: true,
+                                    bio: true,
+                                    birthDate: true,
+                                    user: {
+                                        select: {
+                                            email: true
+                                        }
+                                    }
+                                }
+                            },
+                            reactions: {
+                                select: {
+                                    profile: {
+                                        select: {
+                                            name: true,
+                                            userId: true,
+                                            bio: true,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    profile: {}
                 }
             });
             if (!tryingToSave?.id) {
-                throw new Error("Prisma didn't update db");
+                response = NextResponse.json({}, { status: 400, statusText: "Prisma didn't update db" });
+            } else {
+                const { post } = tryingToSave;
+                const getPostResponse: GetPost = post;
+                getPostResponse.liked = action == "like" ? true : false;
+                response = NextResponse.json(getPostResponse, { status: 200, statusText: "Updated"})
             }
         }
     } catch (error) {
         response = NextResponse.json({}, { status: 500, statusText: error instanceof Error ? error.message : "Error" })
     } finally {
-        response;
+        return response;
     }
 }
