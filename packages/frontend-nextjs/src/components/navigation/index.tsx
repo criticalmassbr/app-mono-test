@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, MouseEvent, FC } from 'react';
+import { useState, MouseEvent, FC } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,13 +14,12 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Logo, LogoBoxDesktop, LogoBoxMobile, MenuAppBar } from './styles';
-import UserDataFromToken from '@/src/@types/jwt';
+import { LogoBoxDesktop, MenuAppBar } from './styles';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Logout'];
 
-const Navigation: FC<{ userData: UserDataFromToken }> = ({ userData }) => {
+const Navigation: FC = () => {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -80,7 +79,7 @@ const Navigation: FC<{ userData: UserDataFromToken }> = ({ userData }) => {
                     <Box>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt={userData?.email} src="/static/images/avatar/2.jpg" />
+                                <Avatar alt={"Usuario Teste"} src="/static/images/avatar/2.jpg" />
                             </IconButton>
                         </Tooltip>
                         <Menu

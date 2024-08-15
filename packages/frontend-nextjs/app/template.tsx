@@ -1,20 +1,10 @@
-"use server";
+import { FC, PropsWithChildren } from "react";
 
-import Navigation from "@/src/components/navigation";
-import JsonWebToken from "@/utils/jwt";
-import { FC, PropsWithChildren, Suspense } from "react";
-
-const fetchUser = async () => {
-    const userData = await  JsonWebToken.userFromToken();
-    return userData;
-}
-const Template: FC<PropsWithChildren> = async ({ children }) => {
-    const userData = await fetchUser();
-    
-    return <Suspense fallback={(<h1>{"Loading"}</h1>)}>
-        <Navigation { ...{ userData }} />
+const Template: FC<PropsWithChildren> = ({ children }) => {
+   
+    return (<>
         {children}
-    </Suspense>
+    </>)
 }
 
 export default Template;

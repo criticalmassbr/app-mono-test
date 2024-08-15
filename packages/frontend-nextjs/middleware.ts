@@ -1,30 +1,54 @@
-// middleware.ts
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import * as jose from 'jose'
+import { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 
-export function middleware(req: NextRequest) {
-  const authToken = req.cookies.get('auth_token')?.value;
+const publicRoutes = ['/login', '/register'];
+const protectedRoutes = ['/posts', '/user'];
+const secretKey = process.env.JWT_SECRET_KEY || 'dialog';
 
-  if (authToken) {
-    const headers = new Headers(req.headers);
-    headers.set('Authorization', `Bearer ${authToken}`);
-
-    const modifiedRequest = new Request(req.url, {
-      headers,
-      method: req.method,
-      body: req.body,
-      redirect: req.redirect,
-    });
-
-    return NextResponse.next({
-      request: modifiedRequest,
-    });
-  }
-
-  return NextResponse.redirect(process.env.NEXT_PUBLIC_LOGIN ?? "");
+const jwtConfig = {
+    secret: new TextEncoder().encode(secretKey),
 }
 
-// Define the paths where the middleware should run
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+    const isAuth = await isAuthenticated(request);
+
+    if (publicRoutes.includes(pathname)) {
+        if (isAuth) {
+            return NextResponse.redirect(new URL('/posts', request.url));
+        }
+    }
+
+    if (protectedRoutes.includes(pathname)) {
+        if (!isAuth) {
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+    }
+
+    return NextResponse.next();
+}
+
+const isAuthenticated = async (req: NextRequest) => {
+    let token = cookies().get("auth_token")?.value;
+    if (token != undefined) {
+        try {
+            const decoded = await jose.jwtVerify(token, jwtConfig.secret)
+            if (decoded.payload?.userId) {
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.error('isAuthenticated error: ', err)
+            return false
+        }
+    } else {
+        return false
+    }
+}
+
 export const config = {
-  matcher: ['/api/:path*', '/dashboard/:path*'], // Adjust the paths as needed
+    matcher: ['/posts/:path*', '/user/:path*', '/login', '/register'],
 };

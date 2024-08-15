@@ -4,38 +4,36 @@ import { FormEvent, FC, useState } from 'react';
 import { Typography } from '@mui/material';
 import { LoginButton, LoginCard, LoginChangeMode, LoginContainer, LoginError, LoginField } from '@/src/components/auth/login/style';
 import { useRouter } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
 const LoginPageComponent: FC = () => {
     const { replace } = useRouter();
     const [error, setError] = useState<string | null>(null);
-    
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
+            console.log(e.currentTarget)
             if (e.currentTarget) {
                 const formData = new FormData(e.currentTarget);
                 if (formData) {
                     const email = formData.get("email");
                     const password = formData.get("password");
                     const body = { email, password };
-                    const response = await fetch('/api/auth/login', {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? ""}/login`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify(body),
-                    });
+                    }) as NextResponse;
                     if (!response.ok || response.status != 200) {
-                        if (response.status == 404) throw new Error("E-mail or password not match");
-                        throw new Error("Server Error");
+                        setError(response?.statusText ?? "Error");
                     }
                     replace("/posts");
-                    setError(null);
                 }
-                throw new Error("No form data");
             }
-            throw new Error("Form wrong")
         } catch (error) {
             setError(error instanceof Error ? error.message : "NextJS Error");
         }
