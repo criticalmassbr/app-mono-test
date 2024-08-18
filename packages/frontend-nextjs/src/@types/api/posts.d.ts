@@ -1,8 +1,10 @@
 type GetPost = {
-    id: number
-    content: string
-    profileId: number
-    liked?: boolean
+    id: number;
+    content: string;
+    profileId: number;
+    createdAt: Date;
+    updatedAt: Date | null;
+    liked?: boolean;
 } & {
     profile: {
         name: string;

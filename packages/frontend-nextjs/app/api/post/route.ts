@@ -1,7 +1,7 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import OwnPrismaClient from "@/src/lib/OwnPrismaClient";
 import GetPost from '@/api_types/posts';
-import {authenticatedUser} from "@/src/lib/user";
+import { authenticatedUser } from "@/src/lib/user";
 
 export async function GET(req: NextRequest) {
     const userData = await authenticatedUser();
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const param = searchParams.get('postId');
-    if (!param)  NextResponse.json({}, { status: 401, statusText: "PostID Must be provided" })
+    if (!param) NextResponse.json({}, { status: 401, statusText: "PostID Must be provided" })
 
     const postId = Number(param);
 

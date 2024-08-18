@@ -9,7 +9,7 @@ export const PostCard = styled(Card)(({ theme }) => ({
 }));
 
 export const PostContent = styled(CardContent)(({ theme }) => ({
-
+    padding: "16px !important"
 }));
 
 export const PostText = styled(Typography)(({ theme }) => ({
@@ -23,7 +23,6 @@ export const PostProfileBox = styled(Button)(({ theme }) => ({
     alignItems: "center",
     gap: 10,
     textTransform: "capitalize",
-    marginBottom: 10
 }));
 
 export const PostProfile = styled(Typography)(({ theme }) => ({
@@ -43,4 +42,20 @@ export const PostReactionBox = styled(Box)(({ theme }) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 10,
+}));
+
+export const PostDate = styled(Typography)(({ theme }) => ({
+    fontSize: 10,
+    marginBottom: 10
+}));
+
+export const PostReactionBoxItem = styled(Box)(({ theme }) => ({
+    alignItems: "center",
+    display: "flex",
+    margin: 0,
+    padding: 0
+}))
+export const PostReactionCounter = styled(Typography)(({ theme }) => ({
+    fontSize: 12,
+    fontWeight: 600
 }));

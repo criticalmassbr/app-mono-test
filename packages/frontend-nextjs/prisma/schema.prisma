@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,43 +8,50 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String
-  profile  Profile?
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  profile    Profile?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime? @updatedAt
 
   @@map("users")
 }
 
 model Profile {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  name      String   @default("")
-  bio       String?
-  birthDate DateTime?
-  user      User     @relation(fields: [userId], references: [id])
-  posts     Post[]
-  reactions Reaction[]
+  id         Int      @id @default(autoincrement())
+  userId     Int      @unique
+  name       String   @default("")
+  bio        String?
+  birthDate  DateTime?
+  user       User     @relation(fields: [userId], references: [id])
+  posts      Post[]
+  reactions  Reaction[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime? @updatedAt
 
   @@map("profiles")
 }
 
 model Post {
-  id        Int        @id @default(autoincrement())
-  content   String
-  profileId Int
-  profile   Profile   @relation(fields: [profileId], references: [id])
-  reactions Reaction[]
+  id         Int      @id @default(autoincrement())
+  content    String
+  profileId  Int
+  profile    Profile @relation(fields: [profileId], references: [id])
+  reactions  Reaction[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime? @updatedAt
 
   @@map("posts")
 }
 
 model Reaction {
-  id        Int     @id @default(autoincrement())
-  postId    Int
-  profileId Int
-  post      Post    @relation(fields: [postId], references: [id])
-  profile   Profile @relation(fields: [profileId], references: [id])
+  id         Int     @id @default(autoincrement())
+  postId     Int
+  profileId  Int
+  post       Post    @relation(fields: [postId], references: [id])
+  profile    Profile @relation(fields: [profileId], references: [id])
+  createdAt  DateTime @default(now())
 
   @@unique([postId, profileId])
   @@map("reactions")
