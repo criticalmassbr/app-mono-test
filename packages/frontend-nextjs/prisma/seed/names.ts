@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import OwnPrismaClient from "@/utils/OwnPrismaClient";
+import OwnPrismaClient from "@/src/lib/OwnPrismaClient";
 
 async function main() {
   try {

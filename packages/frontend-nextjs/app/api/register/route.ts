@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OwnPrismaClient from "@/utils/OwnPrismaClient";
+import OwnPrismaClient from "@/src/lib/OwnPrismaClient";
 import bcrypt from 'bcrypt';
 import UserRegister from '@/api_types/register';
 

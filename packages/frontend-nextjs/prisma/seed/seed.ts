@@ -1,4 +1,4 @@
-import OwnPrismaClient from "@/utils/OwnPrismaClient";
+import OwnPrismaClient from "@/src/lib/OwnPrismaClient";
 import { faker } from '@faker-js/faker';
 
 async function main() {

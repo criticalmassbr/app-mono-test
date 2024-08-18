@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import UserLogin from '@/api_types/login';
-import OwnPrismaClient from "@/utils/OwnPrismaClient";
+import OwnPrismaClient from "@/src/lib/OwnPrismaClient";
 
 const secretKey = process.env.JWT_SECRET_KEY || 'dialog';
 export type LoginResponse = NextResponse<{

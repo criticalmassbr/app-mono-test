@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import * as jose from 'jose'
-import OwnPrismaClient from "@/utils/OwnPrismaClient"
+import OwnPrismaClient from "@/src/lib/OwnPrismaClient"
 
 const secretKey = process.env.JWT_SECRET_KEY || 'dialog';
 

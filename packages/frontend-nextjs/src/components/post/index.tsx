@@ -12,12 +12,12 @@ type Props = { post: GetPost, fetchPosts: () => Promise<void>, user: AuthUser, i
 const Post: FC<Props> = ({ post, user, posts, index, fetchPosts }) => {
     const [liked, setLiked] = useState<boolean>(post.liked ?? false);
     const { showMessage } = useMessage();
-    const { reactions } = post;
     const { profile } = user;
 
     const handleLike: MouseEventHandler<HTMLButtonElement> = async (e) => {
         e.preventDefault();
-        const response: NextResponse = await fetch(`${process.env.NEXT_PUBLIC_API ?? ''}/reactions`,
+        const url = `${process.env.NEXT_PUBLIC_API ?? ''}/${liked ? `unlike` : `like`}`
+        const response: NextResponse = await fetch(url,
             {
                 method: "POST",
                 body: JSON.stringify({
@@ -27,15 +27,35 @@ const Post: FC<Props> = ({ post, user, posts, index, fetchPosts }) => {
                 })
             }) as NextResponse<{} | GetPost>;
         if (response.ok) {
-            const postInfo = await response.json() as {} | GetPost;
-            console.log({ postInfo })
-            if (Object.keys(postInfo).length === 0 && postInfo.constructor === Object) {
-                setLiked(Boolean((postInfo as GetPost).liked));
-            }
-            
-            // await fetchPosts();
+            if (liked) removeLike()
+            else addLike()
+
+        } else {
+            showMessage(response.statusText, "warning")
         }
-        else showMessage(response.statusText, "warning")
+    }
+
+    const addLike = () => {
+        const { profile } = user;
+        post.reactions.push({
+            profile: {
+                userId: user.id,
+                name: profile?.name ?? "",
+                bio: profile?.bio ?? ""
+            }
+        });
+        setLiked(true);
+    }
+
+    const removeLike = () => {
+        const findIndex = post.reactions.findIndex(e => e.profile.userId == user.id);
+        
+        if (findIndex !== 1) {
+            const newPost = { ...post };
+            newPost.reactions.splice(findIndex, 1);
+            posts[findIndex] = newPost;
+            setLiked(false);
+        }
     }
 
     return (
@@ -52,7 +72,7 @@ const Post: FC<Props> = ({ post, user, posts, index, fetchPosts }) => {
                             {liked == true && <Favorite fontSize='small' />}
                             {!liked && <FavoriteBorder fontSize='small' />}
                         </IconButton>
-                        <span>{reactions?.length}</span>
+                        <span>{post.reactions?.length}</span>
                     </Box>
                 </PostReactionBox>
             </PostContent>

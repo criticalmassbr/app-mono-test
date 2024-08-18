@@ -1,41 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OwnPrismaClient from "@/utils/OwnPrismaClient";
+import {NextRequest, NextResponse} from 'next/server';
+import OwnPrismaClient from "@/src/lib/OwnPrismaClient";
 import GetPost from '@/api_types/posts';
-import * as jose from 'jose'
+import {authenticatedUser} from "@/src/lib/user";
+import RedisClient from "@/src/lib/redis";
 
-const secretKey = process.env.JWT_SECRET_KEY || 'dialog';
-
-const jwtConfig = {
-    secret: new TextEncoder().encode(secretKey),
-}
-
-const userId = async (req: NextRequest) => {
-    let token = req.cookies.get("auth_token")?.value ?? undefined;
-    if (token != undefined) {
-        try {
-            const decoded = await jose.jwtVerify(token, jwtConfig.secret)
-            if (decoded.payload?.userId) {
-                return String(decoded.payload?.userId);
-            } else {
-                return null
-            }
-        } catch (err) {
-            console.error('isAuthenticated error: ', err)
-            return null
-        }
-    } else {
-        return null
-    }
+const cacheKey = (userId: number, page: number = 1) => {
+    return `posts:all:${userId}:${page}`;
 }
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const parm = searchParams.get('page');
-    const page = Boolean(parm) ? Number(parm) : 1;
+    const userData = await authenticatedUser();
+    if (!userData) throw new Error("UserData not found");
+
+    const {searchParams} = new URL(req.url);
+    const param = searchParams.get('page');
+    const page = Boolean(param) ? Number(param) : 1;
     const pageSize = 10;
     const offset = (page - 1) * pageSize;
+    const cachedPosts = await RedisClient.get(cacheKey(userData.id, page));
 
-    const posts: GetPost[] = await OwnPrismaClient.post.findMany({
+    if (cachedPosts) {
+        return NextResponse.json(JSON.parse(cachedPosts));
+    }
+
+    let posts: GetPost[] = await OwnPrismaClient.post.findMany({
         skip: offset, take: pageSize,
         include: {
             profile: {
@@ -63,16 +51,12 @@ export async function GET(req: NextRequest) {
             }
         },
     });
-    const id = await userId(req);
 
-    const arr = posts.map(post => {
-        if (id) {
-            const liked = post.reactions.map(e => e.profile.userId)?.includes(Number(id));
-            post.liked = liked;
-        } else {
-            post.liked = false;
-        }
+    posts = posts.map(post => {
+        post.liked = post.reactions.some(e => e.profile.userId == userData.id);
         return post;
-    })
-    return NextResponse.json(arr, { status: 200 });
+    });
+    await RedisClient.set(cacheKey(userData.id, page), JSON.stringify(posts), {EX: 3600});
+
+    return NextResponse.json(posts, {status: 200});
 }
