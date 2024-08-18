@@ -13,7 +13,7 @@ export const PostContent = styled(CardContent)(({ theme }) => ({
 }));
 
 export const PostText = styled(Typography)(({ theme }) => ({
-    fontSize: 12
+    fontSize: 13
 }));
 
 export const PostProfileBox = styled(Button)(({ theme }) => ({
@@ -23,6 +23,7 @@ export const PostProfileBox = styled(Button)(({ theme }) => ({
     alignItems: "center",
     gap: 10,
     textTransform: "capitalize",
+    color: "#000000 !important"
 }));
 
 export const PostProfile = styled(Typography)(({ theme }) => ({

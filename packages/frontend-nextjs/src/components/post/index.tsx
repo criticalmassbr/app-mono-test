@@ -8,9 +8,9 @@ import { NextResponse } from "next/server";
 import { useMessage } from "@/src/contexts/message";
 import { formatRelative } from "date-fns";
 
-type Props = { post: GetPost, fetchPosts: () => Promise<void>, user: AuthUser, index: number, posts: GetPost[], setPosts(v: GetPost[]): void }
+type Props = { post: GetPost, user: AuthUser, posts: GetPost[] }
 
-const Post: FC<Props> = ({ post, user, posts, index, fetchPosts }) => {
+const Post: FC<Props> = ({ post, user, posts }) => {
     const [liked, setLiked] = useState<boolean>(post.liked ?? false);
     const { showMessage } = useMessage();
     const { profile } = user;

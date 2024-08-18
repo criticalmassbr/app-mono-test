@@ -12,24 +12,24 @@ const FeedPageComponent: FC<{ user: AuthUser }> = ({ user }) => {
     const [hasMore, setHasMore] = useState(true);
     const [posts, setPosts] = useState<GetPost[]>([]);
 
-    const fetchPosts = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? ''}/posts?page=${page <= 0 ? 1 : page}`);
-            const { ok, statusText } = response;
-            if (!ok) throw new Error(statusText);
-            const body = await response.json();
-            setHasMore(body.length > 0);
-            setLoading(false);
-            setPosts((prev) => [...prev, ...body]);
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false);
-        }
-    }
-
     useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API ?? ''}/posts?page=${page <= 0 ? 1 : page}`);
+                const { ok, statusText } = response;
+                if (!ok) throw new Error(statusText);
+                const body = await response.json();
+                setHasMore(body.length > 0);
+                setLoading(false);
+                setPosts((prev) => [...prev, ...body]);
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false);
+            }
+        }
+
         fetchPosts();
     }, [page, user]);
 
@@ -48,9 +48,7 @@ const FeedPageComponent: FC<{ user: AuthUser }> = ({ user }) => {
         <Container maxWidth="md">
 
             {posts.map((post, index) =>
-                <Post {...{
-                    post, index, posts, user, setPosts, fetchPosts
-                }} key={`post_card_${post.id}_${index}`} />)}
+                <Post {...{ post, posts, user }} key={`post_card_${post.id}_${index}`} />)}
 
             {loading && <p>Carregando mais...</p>}
             {!hasMore && <p>Não há mais registros.</p>}
